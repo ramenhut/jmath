@@ -1,15 +1,12 @@
-
+/*
 //
-// Copyright (c) 2000-2002 Joe Bertolami. All Right Reserved.
-//
-// random.h
+// Copyright (c) 1998-2019 Joe Bertolami. All Right Reserved.
 //
 //   Redistribution and use in source and binary forms, with or without
 //   modification, are permitted provided that the following conditions are met:
 //
 //   * Redistributions of source code must retain the above copyright notice,
-//   this
-//     list of conditions and the following disclaimer.
+//     this list of conditions and the following disclaimer.
 //
 //   * Redistributions in binary form must reproduce the above copyright notice,
 //     this list of conditions and the following disclaimer in the documentation
@@ -30,6 +27,7 @@
 //
 //   For more information, visit http://www.bertolami.com.
 //
+*/
 
 #ifndef __RANDOM_H__
 #define __RANDOM_H__
@@ -38,19 +36,13 @@
 
 namespace base {
 
-void set_seed(uint32 ui_seed);
+void set_seed(uint64 ui_seed);
 
-uint32 random_integer();              // returns a range of 0...BASE_MAX_UINT32
-uint32 random_integer(uint32* seed);  // returns a range of 0...BASE_MAX_UINT32
+uint64 random_integer();  // returns a range of 0...BASE_MAX_UINT32
+float32 random_float();   // returns a range of 0...1
 
-float32 random_float();              // returns a range of 0...1
-float32 random_float(uint32* seed);  // returns a range of 0...1
-
-int32 random_integer_range(int32 imin, int32 imax);
-int32 random_integer_range(uint32* seed, int32 imin, int32 imax);
-
+int64 random_integer_range(int32 imin, int32 imax);
 float32 random_float_range(float32 imin, float32 imax);
-float32 random_float_range(uint32* seed, float32 imin, float32 imax);
 
 }  // namespace base
 

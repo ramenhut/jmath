@@ -1,15 +1,12 @@
-
+/*
 //
-// Copyright (c) 1998-2002 Joe Bertolami. All Right Reserved.
-//
-// normal.h
+// Copyright (c) 1998-2019 Joe Bertolami. All Right Reserved.
 //
 //   Redistribution and use in source and binary forms, with or without
 //   modification, are permitted provided that the following conditions are met:
 //
 //   * Redistributions of source code must retain the above copyright notice,
-//   this
-//     list of conditions and the following disclaimer.
+//     this list of conditions and the following disclaimer.
 //
 //   * Redistributions in binary form must reproduce the above copyright notice,
 //     this list of conditions and the following disclaimer in the documentation
@@ -30,6 +27,7 @@
 //
 //   For more information, visit http://www.bertolami.com.
 //
+*/
 
 #ifndef __NORMAL_H__
 #define __NORMAL_H__
@@ -40,51 +38,31 @@
 
 namespace base {
 
-//
-// Random normal generator
-//
-
 class normal_sphere {
-  //
+ public:
+  normal_sphere();
+  // Initializes the normal sphere with count normals.
+  void initialize(int32 count);
+  // Returns a generic, unconstrained random normal from the unit sphere.
+  vector3 random_normal();
+  // Returns a random reflection normal within the solid angle envelope.
+  vector3 random_reflection(const vector3& incident, const vector3& normal,
+                            float32 solidangle);
+  // Returns a random refraction normal within the solid angle envelope.
+  vector3 random_refraction(const vector3& incident, const vector3& normal,
+                            float32 solidangle, float32 index);
+
+ private:
   // The normal list is allocated and populated during setup,
   // and should never be reallocated during the frame. Access
   // into the normal list should be direct.
-  //
-
   std::vector<vector3> normal_list;
-
- public:
-  normal_sphere();
-  ~normal_sphere();
-
-  int8 initialize(int32 count);
-  void deinitialize();
-
-  //
-  // RandomNormal may be used to generate normals with or without constraints:
-  //
-  // o: Generic (unconstrained)
-  //
-  // o: reflection: generates a random reflection normal within the solid angle
-  // envelope
-  //
-  // o: Refraction: generates a random refraction normal within the solid angle
-  // envelope
-  //
-
-  vector3 random_normal() const;
-  vector3 random_reflection(const vector3& incident, const vector3& normal,
-                            float32 solidangle) const;
-  vector3 random_refraction(const vector3& incident, const vector3& normal,
-                            float32 solidangle, float32 n_l, float32 n_t) const;
 };
 
-//
 // Generic normal manipulation:
 //   Note that the reflection and refraction interfaces here assume a solid
 //   angle of zero. For non-zero solid angle envelopes, use the random normal
 //   generator above.
-//
 
 inline vector3 calculate_normal(const vector3& a, const vector3& b,
                                 const vector3& c) {
@@ -109,7 +87,7 @@ inline vector3 calculate_reflection(const vector3& incident,
 inline vector3 calculate_refraction(const vector3& incident,
                                     const vector3& normal, float32 n_l,
                                     float32 n_t) {
-  return incident.refract(normal, n_l, n_t);
+  return incident.refract(normal, n_l / n_t);
 }
 
 inline vector3 calculate_planar_projection(const vector3& vector_to_project,

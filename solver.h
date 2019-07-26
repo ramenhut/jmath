@@ -1,15 +1,12 @@
-
+/*
 //
-// Copyright (c) 1998-2002 Joe Bertolami. All Right Reserved.
-//
-// solver.h
+// Copyright (c) 1998-2019 Joe Bertolami. All Right Reserved.
 //
 //   Redistribution and use in source and binary forms, with or without
 //   modification, are permitted provided that the following conditions are met:
 //
 //   * Redistributions of source code must retain the above copyright notice,
-//   this
-//     list of conditions and the following disclaimer.
+//     this list of conditions and the following disclaimer.
 //
 //   * Redistributions in binary form must reproduce the above copyright notice,
 //     this list of conditions and the following disclaimer in the documentation
@@ -30,6 +27,7 @@
 //
 //   For more information, visit http://www.bertolami.com.
 //
+*/
 
 #ifndef __SOLVER_H__
 #define __SOLVER_H__
@@ -44,17 +42,13 @@ typedef struct {
 
 } BASE_SOLVER_SOLUTION;
 
-//
 // Solver routines for quadratic and cubic polynomials
-//
 
 inline void solve_quadratic(float32 a, float32 b, float32 c,
                             BASE_SOLVER_SOLUTION* out_solution) {
-  //
   // This solves equations of the form:
   //
   //     at^2 + bt + c = 0
-  //
 
   if (BASE_PARAM_CHECK) {
     if (!out_solution) {
@@ -76,25 +70,19 @@ inline void solve_quadratic(float32 a, float32 b, float32 c,
   }
 
   else if (0 == discriminant) {
-    //
     // This case could be collapsed into the above one, but we keep
     // it separate for readability.
-    //
 
     out_solution->solution_count = 1;
     out_solution->t[0] = (-b) / (2.0 * a);
   } else {
-    //
     // There are no roots to this equation
-    //
-
     out_solution->solution_count = 0;
   }
 }
 
 inline void solve_cubic(float32 e, float32 a, float32 b, float32 c,
                         BASE_SOLVER_SOLUTION* out_solution) {
-  //
   // Note this is a closed form solution for a cubic equation (thus a cubic
   // formula)
   //
@@ -108,7 +96,6 @@ inline void solve_cubic(float32 e, float32 a, float32 b, float32 c,
   //     t^3 + at^2 + bt + c = 0 (ii)
   //
   // Then you should divide by the appropriate value to produce (i).
-  //
 
   if (BASE_PARAM_CHECK) {
     if (!out_solution) {
@@ -122,17 +109,14 @@ inline void solve_cubic(float32 e, float32 a, float32 b, float32 c,
   b /= e;
   c /= e;
 
-  //
   // Note that you cannot use pow( n, exp ) if n is negative. It will result in
   // a NaN, as defined by the C99 standard:
   //
-  //     "The pow functions compute x raised to the power of y. A domain error
-  //     occurs if x
-  //      is finite or negative ... A domain error may occur if ... y is less
-  //      than or equal to zero."
+  //   "The pow functions compute x raised to the power of y. A domain error
+  //    occurs if x is finite or negative ... A domain error may occur if ...
+  //    y is less than or equal to zero."
   //
   // Thus we solve this using a different method.
-  //
 
   float32 p = (-1.0f / 3.0f) * a * a + b;
   float32 q = (2.0f / 27.0f) * a * a * a - (1.0f / 3.0f) * a * b + c;
@@ -155,20 +139,17 @@ inline void solve_cubic(float32 e, float32 a, float32 b, float32 c,
 
   memset(out_solution, 0, sizeof(BASE_SOLVER_SOLUTION));
 
-  if (d < 0)  // one root
-  {
+  if (d < 0) {
     out_solution->solution_count = 1;
     out_solution->t[0] = (r + s) - a / 3.0;
     return;
-  } else if (0 == d)  // two roots
-  {
+  } else if (0 == d) {
     out_solution->solution_count = 3;
     out_solution->t[0] = 2.0 * r - a / 3.0;
     out_solution->t[1] = -1.0 * r - a / 3.0;
     out_solution->t[2] = -1.0 * r - a / 3.0;
     return;
-  } else  // three roots
-  {
+  } else {
     out_solution->solution_count = 3;
 
     float32 theta =

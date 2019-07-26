@@ -1,15 +1,12 @@
-
+/*
 //
-// Copyright (c) 1998-2002 Joe Bertolami. All Right Reserved.
-//
-// quaternion.h
+// Copyright (c) 1998-2019 Joe Bertolami. All Right Reserved.
 //
 //   Redistribution and use in source and binary forms, with or without
 //   modification, are permitted provided that the following conditions are met:
 //
 //   * Redistributions of source code must retain the above copyright notice,
-//   this
-//     list of conditions and the following disclaimer.
+//     this list of conditions and the following disclaimer.
 //
 //   * Redistributions in binary form must reproduce the above copyright notice,
 //     this list of conditions and the following disclaimer in the documentation
@@ -30,6 +27,7 @@
 //
 //   For more information, visit http://www.bertolami.com.
 //
+*/
 
 #ifndef __QUATERNION_H__
 #define __QUATERNION_H__
@@ -60,10 +58,6 @@ typedef struct quat {
   quat(float32 wj, float32 xj, float32 yj, float32 zj);
   ~quat();
 
-  //
-  // operations
-  //
-
   inline const quat& clear();
   inline quat normalize() const;
   inline float32 length() const;
@@ -81,19 +75,11 @@ typedef struct quat {
   inline quat rotation(const vector3& from, const vector3& to) const;
   inline quat rotation(const quat& to, const float32 frac) const;
 
-  //
-  // conversion
-  //
-
   inline const quat& from_euler(const vector3& rhs);
   inline vector4 to_axis_angle() const;  // returned as <x, y, z, angle>
   inline const quat& from_axis_angle(const vector3& axis, float32 angle);
   inline const quat& from_axis_angle(const vector4& rhs);
   matrix3 to_matrix() const;
-
-  //
-  // operators
-  //
 
   inline const quat& operator=(const quat& rhs);
   inline const quat& operator*=(const quat& rhs);
@@ -106,7 +92,6 @@ typedef struct quat {
   inline vector3 operator*(
       const vector3& rhs) const;  // rotates a vector by this quaternion
 
-  //
   // Here we define two variants of our bracket operator. The first
   // operator handles the lvalue case:
   //
@@ -115,7 +100,6 @@ typedef struct quat {
   // The second operator passes a const this pointer, and is useful
   // when operating on const references (e.g. any of our other
   // operators that receive const CVector3 & rhs as a parameter.)
-  //
 
   inline float32& operator[](int32 index);
   inline const float32& operator[](int32 index) const;
@@ -194,9 +178,7 @@ inline float32 quat::dot(const quat& rhs) const {
 }
 
 inline quat quat::rotation(const quat& to, float32 frac) const {
-  //
   // This serves as the basis for our spherical linear interpolation routines.
-  //
 
   quat q = (*this) * (1 - frac) + to * frac;
 
@@ -286,9 +268,7 @@ inline quat quat::operator*(const float32& rhs) const {
 }
 
 inline vector3 quat::operator*(const vector3& rhs) const {
-  //
   // v = q * v * q' (conjugate)
-  //
 
   quat v(rhs.normalize());
   quat q = (*this) * v * Conjugate();

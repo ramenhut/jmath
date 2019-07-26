@@ -1,34 +1,33 @@
-
-// Copyright (c) 2000-2002 Joe Bertolami. All Right Reserved.
+/*
 //
-// scalar.h
+// Copyright (c) 1998-2019 Joe Bertolami. All Right Reserved.
 //
 //   Redistribution and use in source and binary forms, with or without
 //   modification, are permitted provided that the following conditions are met:
 //
 //   * Redistributions of source code must retain the above copyright notice,
-//   this
-//     list of conditions and the following disclaimer.
+//     this list of conditions and the following disclaimer.
 //
 //   * Redistributions in binary form must reproduce the above copyright notice,
 //     this list of conditions and the following disclaimer in the documentation
 //     and/or other materials provided with the distribution.
 //
 //   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-//   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+//   AND ANY EXPRESS OR IMPLIED WARRANTIES, CLUDG, BUT NOT LIMITED TO, THE
 //   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-//   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-//   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-//   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-//   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-//   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-//   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-//   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-//   POSSIBILITY OF SUCH DAMAGE.
+//   ARE DISCLAIMED.  NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+//   LIABLE FOR ANY DIRECT, DIRECT, CIDENTAL, SPECIAL, EXEMPLARY, OR
+//   CONSEQUENTIAL DAMAGES (CLUDG, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+//   GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSESS TERRUPTION)
+//   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER  CONTRACT, STRICT
+//   LIABILITY, OR TORT (CLUDG NEGLIGENCE OR OTHERWISE) ARISG  ANY WAY  OF THE
+//   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // Additional Information:
 //
 //   For more information, visit http://www.bertolami.com.
+//
+*/
 
 #ifndef __SCALAR_H__
 #define __SCALAR_H__
@@ -168,7 +167,7 @@ inline float32 clip_range(float32 value, float32 min, float32 max) {
 
 inline int16 saturate(int32 input) { return clip_range(input, 0, 255); }
 
-inline int16 saturate(float32 input) { return clip_range(input, 0.0f, 1.0f); }
+inline float32 saturate(float32 input) { return clip_range(input, 0.0f, 1.0f); }
 
 inline bool is_pow2(uint32 value) { return (0 == (value & (value - 1))); }
 
@@ -234,9 +233,7 @@ inline uint32 align2(uint32 value) {
 inline float inv_sqrt(float32 f) {
   // Newton-Raphson approximation with a curiously awesome initial guess
   float32 half = 0.5f * f;
-
   int32 i = *reinterpret_cast<int32 *>(&f);
-
   i = 0x5f3759df - (i >> 1);
   f = *reinterpret_cast<float32 *>(&i);
   f = f * (1.5f - half * f * f);

@@ -1,15 +1,12 @@
-
+/*
 //
-// Copyright (c) 1998-2002 Joe Bertolami. All Right Reserved.
-//
-// vector4.h
+// Copyright (c) 1998-2019 Joe Bertolami. All Right Reserved.
 //
 //   Redistribution and use in source and binary forms, with or without
 //   modification, are permitted provided that the following conditions are met:
 //
 //   * Redistributions of source code must retain the above copyright notice,
-//   this
-//     list of conditions and the following disclaimer.
+//     this list of conditions and the following disclaimer.
 //
 //   * Redistributions in binary form must reproduce the above copyright notice,
 //     this list of conditions and the following disclaimer in the documentation
@@ -30,6 +27,7 @@
 //
 //   For more information, visit http://www.bertolami.com.
 //
+*/
 
 #ifndef __VECTOR4_H__
 #define __VECTOR4_H__
@@ -72,12 +70,6 @@ typedef struct vector4 {
   operator vector2();
   operator vector3();
 
-  void print() const;
-
-  //
-  // operations
-  //
-
   inline const vector4& clear();
   inline vector4 normalize() const;
   inline vector4 clamp(float32 lower, float32 upper) const;
@@ -98,10 +90,6 @@ typedef struct vector4 {
   inline vector4 rotate_z(float32 rad) const;
   inline vector4 rotate(float32 rad, const vector3& axis) const;
 
-  //
-  // assignment operators
-  //
-
   const vector4& operator=(const vector2& rhs);
   const vector4& operator=(const vector3& rhs);
   inline const vector4& operator=(const vector4& rhs);
@@ -113,13 +101,6 @@ typedef struct vector4 {
   inline const vector4& operator/=(const vector4& rhs);
   inline const vector4& operator/=(float32 rhs);
 
-  //           vector4   operator *    ( const matrix4 & rhs ) const;
-  //     const vector4 & operator *=   ( const matrix4 & rhs );
-
-  //
-  // binary operators
-  //
-
   inline bool operator==(const vector4& rhs) const;
   inline bool operator!=(const vector4& rhs) const;
   inline vector4 operator-(const vector4& rhs) const;
@@ -129,7 +110,6 @@ typedef struct vector4 {
   inline vector4 operator/(const vector4& rhs) const;
   inline vector4 operator/(float32 rhs) const;
 
-  //
   // Here we define two variants of our bracket operator. The first
   // operator handles the lvalue case:
   //
@@ -138,7 +118,6 @@ typedef struct vector4 {
   // The second operator passes a const this pointer, and is useful
   // when operating on const references (e.g. any of our other
   // operators that receive const CVector3 & rhs as a parameter.)
-  //
 
   inline float32& operator[](int32 index);
   inline const float32& operator[](int32 index) const;
@@ -167,10 +146,7 @@ inline const vector4& vector4::set(float32 xj, float32 yj, float32 zj,
 }
 
 inline vector4 vector4::project(const vector4& rhs) const {
-  //
   // project rhs onto *this
-  //
-
   vector4 this_normal = normalize();
 
   float32 projected_length = rhs.dot(this_normal);
@@ -211,10 +187,7 @@ inline vector4 vector4::normalize() const {
 }
 
 inline bool vector4::parallel(const vector4& rhs) const {
-  //
   // if vector 2 is some multiple of vector 1, they are parallel.
-  //
-
   float32 a = angle(rhs);
 
   if (compare_epsilon(a, 0.0f, BASE_EPSILON) ||
@@ -232,17 +205,13 @@ inline bool vector4::orthogonal(const vector4& rhs) const {
 inline float32 vector4::angle(const vector4& rhs) const {
   float32 product = dot(rhs);
 
-  //
   // cos(t) = v1 (dot) v2 / ||v1|| * ||v2||
-  //
 
   float32 len1 = length();
   float32 len2 = rhs.length();
 
-  //
   // If either vector has a zero length, the angle between them
   // will be invalid.
-  //
 
   if (0 == len1 || 0 == len2) {
     return 0.0f;
@@ -266,10 +235,8 @@ inline float32 vector4::distance(const vector4& rhs) const {
 inline float32 vector4::length() const { return sqrtf(dot(*this)); }
 
 inline vector4 vector4::rotate(float32 rad, const vector3& axis) const {
-  vector3 output = (*this);
-
+  vector3 output(x, y, z);
   output = output.rotate(rad, axis);
-
   return output;
 }
 
@@ -295,7 +262,8 @@ inline const vector4& vector4::operator=(const vector4& rhs) {
 }
 
 inline bool vector4::operator==(const vector4& rhs) const {
-  return (x == rhs.x && y == rhs.y && z == rhs.z && w == rhs.w);
+  return (compare_epsilon(x, rhs.x) && compare_epsilon(y, rhs.y) &&
+          compare_epsilon(z, rhs.z) && compare_epsilon(w, rhs.w));
 }
 
 inline bool vector4::operator!=(const vector4& rhs) const {

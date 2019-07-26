@@ -1,15 +1,12 @@
-
+/*
 //
-// Copyright (c) 1998-2002 Joe Bertolami. All Right Reserved.
-//
-// matrix3.h
+// Copyright (c) 1998-2019 Joe Bertolami. All Right Reserved.
 //
 //   Redistribution and use in source and binary forms, with or without
 //   modification, are permitted provided that the following conditions are met:
 //
 //   * Redistributions of source code must retain the above copyright notice,
-//   this
-//     list of conditions and the following disclaimer.
+//     this list of conditions and the following disclaimer.
 //
 //   * Redistributions in binary form must reproduce the above copyright notice,
 //     this list of conditions and the following disclaimer in the documentation
@@ -30,11 +27,13 @@
 //
 //   For more information, visit http://www.bertolami.com.
 //
+*/
 
 #ifndef __MATRIX3_H__
 #define __MATRIX3_H__
 
 #include "base.h"
+#include "matrix2.h"
 #include "solver.h"
 #include "vector3.h"
 
@@ -42,13 +41,11 @@ namespace base {
 
 typedef struct matrix3 {
  public:
-  //
   // Column Major:
   //
   // 3x3 =  | 0  3  6 |
   //        | 1  4  7 |
   //        | 2  5  8 |
-  //
 
   union {
     struct {
@@ -72,19 +69,11 @@ typedef struct matrix3 {
   matrix3();
   matrix3(const matrix2& rhs);
   matrix3(const matrix3& rhs);
-  matrix3(const matrix4& rhs);
   matrix3(float32 _m00, float32 _m10, float32 _m20, float32 _m01, float32 _m11,
           float32 _m21, float32 _m02, float32 _m12, float32 _m22);
   ~matrix3();
 
   operator matrix2();
-  operator matrix4();
-
-  void print() const;
-
-  //
-  // operations
-  //
 
   inline const matrix3& clear();
   inline const matrix3& identity();
@@ -107,10 +96,10 @@ typedef struct matrix3 {
   inline matrix3 scale(float32 sx, float32 sy,
                        float32 sz) const;  // creates a scaling matrix
   inline matrix3 rotation(
-      float32 rad, const vector3& axis) const;   // creates a rotation matrix
-  inline matrix3 rotation_x(float32 rad) const;  // ...
-  inline matrix3 rotation_y(float32 rad) const;  // ...
-  inline matrix3 rotation_z(float32 rad) const;  // ...
+      float32 rad, const vector3& axis) const;  // creates a rotation matrix
+  inline matrix3 rotation_x(float32 rad) const;
+  inline matrix3 rotation_y(float32 rad) const;
+  inline matrix3 rotation_z(float32 rad) const;
 
   inline const matrix3& orient(const vector3& xaxis, const vector3& yaxis,
                                const vector3& zaxis);
@@ -120,19 +109,11 @@ typedef struct matrix3 {
                             float32 _m01, float32 _m11, float32 _m21,
                             float32 _m02, float32 _m12, float32 _m22);
 
-  //
-  // assignment operators
-  //
-
   inline const matrix3& operator=(const matrix3& rhs);
   inline const matrix3& operator-=(const matrix3& rhs);
   inline const matrix3& operator+=(const matrix3& rhs);
   inline const matrix3& operator*=(const matrix3& rhs);
   inline const matrix3& operator/=(const matrix3& rhs);
-
-  //
-  // binary operators
-  //
 
   inline bool operator==(const matrix3& rhs) const;
   inline bool operator!=(const matrix3& rhs) const;
@@ -143,7 +124,6 @@ typedef struct matrix3 {
   inline matrix3 operator*(float32 rhs) const;
   inline matrix3 operator/(const matrix3& rhs) const;
 
-  //
   // Here we define two variants of our bracket operator. The first
   // operator handles the lvalue case:
   //
@@ -152,7 +132,6 @@ typedef struct matrix3 {
   // The second operator passes a const this pointer, and is useful
   // when operating on const references (e.g. any of our other
   // operators that receive const CMatrix3 & rhs as a parameter.)
-  //
 
   inline float32& operator[](int32 i);
   inline const float32& operator[](int32 i) const;
@@ -161,16 +140,12 @@ typedef struct matrix3 {
 
 inline float32 matrix3::cofactor(uint8 i, uint8 j) const {
   if (0 == ((i + j) % 2)) {
-    //
     // Even -- our base is positive
-    //
 
     return minor(i, j);
   }
 
-  //
   // Odd -- our base is negative
-  //
 
   return -1.0f * minor(i, j);
 }
@@ -191,18 +166,12 @@ inline bool matrix3::is_diagonal() const {
 inline bool matrix3::is_invertible() const { return (0 != determinant()); }
 
 inline vector3 matrix3::eigenvalues() const {
-  //
   // Solve det( M - lamda * Identity ) = 0
-  //
-
-  //
   // Determinant of a 3xx3:
   //
   //   | a  b  c |
   //   | d  e  f | => aei + bfg + cdh - ceg - bdi - afh
   //   | g  h  i |
-  //
-
   //
   // The characteristic polynomial is defined as:
   //
@@ -212,13 +181,10 @@ inline vector3 matrix3::eigenvalues() const {
   //    or
   //
   // -lambda^3 + trace() * lambda ^ 2 - c2 * lambda + determinant()
-  //
 
   float32 c2 = 0.0f;
 
-  //
   // c2 is the sum of the principal minors of our matrix
-  //
 
   for (uint8 i = 0; i < 3; i++) {
     c2 += minor(i, i);
@@ -243,13 +209,8 @@ inline vector3 matrix3::eigenvalues() const {
 }
 
 inline matrix3 matrix3::eigenvectors() const {
-  //
   // Solve det( M - lamda * Identity ) * Vi = 0
-  //
-
-  //
   // We should have one eigenvector per eigen value
-  //
 
   matrix3 output;
   vector3 values = eigenvalues();
@@ -259,14 +220,10 @@ inline matrix3 matrix3::eigenvectors() const {
 
   i.identity();
 
-  //
   // z = ( m[1] * m[3] - m[4] * ( -1.0 * m[0] ) ) / ( m[7] * m[3] - m[4] * (
   // -1.0 * m[6] ) ) y = ( -1.0 * m[0] - m[6] * z ) / m[3] x = 1
   //
-
-  //
   // First eigen value calculation
-  //
 
   matrix3 o1 = m - i * values.x;
 
@@ -279,9 +236,7 @@ inline matrix3 matrix3::eigenvectors() const {
   output.m[3] = y1;
   output.m[6] = z1;
 
-  //
   // Second eigen value calculation
-  //
 
   matrix3 o2 = m - i * values.y;
 
@@ -294,9 +249,7 @@ inline matrix3 matrix3::eigenvectors() const {
   output.m[4] = y2;
   output.m[7] = z2;
 
-  //
   // Third eigen value calculation
-  //
 
   matrix3 o3 = m - i * values.z;
 
@@ -380,9 +333,7 @@ inline matrix3 matrix3::inverse() const {
 
   inv_det = 1.0f / det;
 
-  //
   // calculate adjoint matrix then transpose it
-  //
 
   adj[0] = (m[4] * m[8] - m[5] * m[7]);
   adj[1] = -1 * (m[3] * m[8] - m[5] * m[6]);
@@ -398,9 +349,7 @@ inline matrix3 matrix3::inverse() const {
 
   adjT = adj.transpose();
 
-  //
   // now multiply all values by inv_det
-  //
 
   for (uint32 i = 0; i < 9; i++) output[i] = adjT[i] * inv_det;
 
@@ -450,10 +399,8 @@ inline matrix3 matrix3::rotation_x(float32 rad) const {
 
   output = output.identity();
 
-  //
   // This produces the same result as rotation( rad, BASE_X_AXIS )
   // without the extra call
-  //
 
   output[4] = cos(rad);
   output[5] = sin(rad);
@@ -468,10 +415,8 @@ inline matrix3 matrix3::rotation_y(float32 rad) const {
 
   output = output.identity();
 
-  //
   // This produces the same result as rotation( rad, BASE_Y_AXIS )
   // without the extra call
-  //
 
   output[0] = cos(rad);
   output[2] = sin(rad);
@@ -486,10 +431,8 @@ inline matrix3 matrix3::rotation_z(float32 rad) const {
 
   output = output.identity();
 
-  //
   // This produces the same result as rotation( rad, BASE_Z_AXIS )
   // without the extra call
-  //
 
   output[0] = cos(rad);
   output[1] = sin(rad);
@@ -620,10 +563,6 @@ inline const matrix3& matrix3::operator*=(const matrix3& rhs) {
 }
 
 inline vector3 matrix3::operator*(const vector3& rhs) const {
-  //
-  // M * vec
-  //
-
   return vector3(rhs.x * m[0] + rhs.y * m[3] + rhs.z * m[6],
                  rhs.x * m[1] + rhs.y * m[4] + rhs.z * m[7],
                  rhs.x * m[2] + rhs.y * m[5] + rhs.z * m[8]);

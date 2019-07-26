@@ -64,13 +64,6 @@ matrix4::operator matrix3() {
   return out;
 }
 
-void matrix4::print() const {
-  BASE_MSG("|%.2f,\t %.2f,\t %.2f,\t %.2f|", m[0], m[4], m[8], m[12]);
-  BASE_MSG("|%.2f,\t %.2f,\t %.2f,\t %.2f|", m[1], m[5], m[9], m[13]);
-  BASE_MSG("|%.2f,\t %.2f,\t %.2f,\t %.2f|", m[2], m[6], m[10], m[14]);
-  BASE_MSG("|%.2f,\t %.2f,\t %.2f,\t %.2f|", m[3], m[7], m[11], m[15]);
-}
-
 float32 matrix4::determinant() const {
   matrix3 one, two, three, four;
   float32 detone, dettwo, detthree, detfour;
@@ -146,10 +139,7 @@ matrix4 matrix4::inverse() const {
 
       int32 ci = 0, cj = 0;
 
-      //
       // calculate cofactor determinant
-      //
-
       for (int32 k = 0; k < 4; k++) {
         if (k == j) continue;
 
@@ -164,10 +154,7 @@ matrix4 matrix4::inverse() const {
         ci++;
       }
 
-      //
       // calculate cofactor for each
-      //
-
       tmpmat[0] = cofact[0][0];
       tmpmat[3] = cofact[0][1];
       tmpmat[6] = cofact[0][2];

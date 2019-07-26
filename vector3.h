@@ -1,15 +1,12 @@
-
+/*
 //
-// Copyright (c) 1998-2002 Joe Bertolami. All Right Reserved.
-//
-// vector3.h
+// Copyright (c) 1998-2019 Joe Bertolami. All Right Reserved.
 //
 //   Redistribution and use in source and binary forms, with or without
 //   modification, are permitted provided that the following conditions are met:
 //
 //   * Redistributions of source code must retain the above copyright notice,
-//   this
-//     list of conditions and the following disclaimer.
+//     this list of conditions and the following disclaimer.
 //
 //   * Redistributions in binary form must reproduce the above copyright notice,
 //     this list of conditions and the following disclaimer in the documentation
@@ -30,6 +27,7 @@
 //
 //   For more information, visit http://www.bertolami.com.
 //
+*/
 
 #ifndef __VECTOR3_H__
 #define __VECTOR3_H__
@@ -37,6 +35,8 @@
 #include "base.h"
 #include "scalar.h"
 #include "vector2.h"
+
+#include <stdio.h>
 
 namespace base {
 
@@ -62,26 +62,19 @@ typedef struct vector3 {
   vector3();
   vector3(const vector2& rhs);
   vector3(const vector3& rhs);
-  vector3(const vector4& rhs);
   vector3(float32 xj, float32 yj, float32 zj);
   ~vector3();
 
   operator vector2();
-  operator vector4();
-
-  void print() const;
-
-  //
-  // operations
-  //
 
   inline const vector3& clear();
   inline vector3 normalize() const;
   inline vector3 cross(const vector3& rhs) const;
   inline vector3 project(const vector3& rhs) const;
-  inline vector3 reflect(const vector3& normal, float32 freflectivity = 1.0f)
-      const;  // 1.0 is fully reflective, 0.0 is non-reflective
-  inline vector3 refract(const vector3& normal, float32 a, float32 b) const;
+  inline float projected_length(const vector3& rhs) const;
+  inline vector3 reflect(const vector3& normal,
+                         float32 freflectivity = 1.0f) const;
+  inline vector3 refract(const vector3& normal, float32 index) const;
   inline vector3 clamp(float32 lower, float32 upper) const;
 
   inline const vector3& set(const vector3& rhs);
@@ -101,27 +94,14 @@ typedef struct vector3 {
   inline float32 distance(const vector3& rhs) const;
   inline float32 length() const;
 
-  //
-  // assignment operators
-  //
-
   const vector3& operator=(const vector2& rhs);
   inline const vector3& operator=(const vector3& rhs);
-  const vector3& operator=(const vector4& rhs);
-
   inline const vector3& operator-=(const vector3& rhs);
   inline const vector3& operator+=(const vector3& rhs);
   inline const vector3& operator*=(const vector3& rhs);
   inline const vector3& operator*=(float32 rhs);
   inline const vector3& operator/=(const vector3& rhs);
   inline const vector3& operator/=(float32 rhs);
-
-  //           vector3   operator *    ( const matrix3 & rhs );
-  //     const vector3 & operator *=   (       matrix3 & rhs ) const;
-
-  //
-  // binary operators
-  //
 
   inline bool operator==(const vector3& rhs) const;
   inline bool operator!=(const vector3& rhs) const;
@@ -132,7 +112,6 @@ typedef struct vector3 {
   inline vector3 operator/(const vector3& rhs) const;
   inline vector3 operator/(float32 rhs) const;
 
-  //
   // Here we define two variants of our bracket operator. The first
   // operator handles the lvalue case:
   //
@@ -141,7 +120,6 @@ typedef struct vector3 {
   // The second operator passes a const this pointer, and is useful
   // when operating on const references (e.g. any of our other
   // operators that receive const CVector3 & rhs as a parameter.)
-  //
 
   inline float32& operator[](int32 index);
   inline const float32& operator[](int32 index) const;
@@ -209,44 +187,34 @@ inline vector3 vector3::cross(const vector3& rhs) const {
 }
 
 inline vector3 vector3::project(const vector3& rhs) const {
-  //
-  // project rhs onto *this
-  //
-
   vector3 this_normal = normalize();
-
   float32 projected_length = rhs.dot(this_normal);
 
   return this_normal * projected_length;
 }
 
-inline vector3 vector3::reflect(const vector3& normal,
-                                float32 freflectivity) const {
-  vector3 reflect =
-      (*this) - (normal * (normal.dot(*this) * (freflectivity + 1.0f)));
-
-  return reflect;
+inline float vector3::projected_length(const vector3& rhs) const {
+  return rhs.dot(*this);
 }
 
-inline vector3 vector3::refract(const vector3& normal, float32 a,
-                                float32 b) const {
-  float32 l_over_t = a / b;
-  float32 n_dot_inc = normal.dot(*this);
-  float32 sqrt_coeff =
-      (1 - ((a * a) / (b * b))) * (1 - (n_dot_inc * n_dot_inc));
+inline vector3 vector3::reflect(const vector3& normal,
+                                float32 freflectivity) const {
+  return (*this) - (normal * (normal.dot(*this) * (freflectivity + 1.0f)));
+}
 
-  if (sqrt_coeff < 0) sqrt_coeff = 1;
+inline vector3 vector3::refract(const vector3& normal, float32 index) const {
+  float32 n_dot_v = -dot(normal);
+  float32 sin2 = (index * index) * (1.0 - n_dot_v * n_dot_v);
 
-  float32 refract_coeff = (l_over_t * n_dot_inc - sqrtf(sqrt_coeff));
-  vector3 refract = (normal * refract_coeff) - (*this) * l_over_t;
+  if (sin2 >= 1.0) return vector3();
 
-  return refract;
+  vector3 refraction =
+      (*this) * index + normal * (index * n_dot_v - sqrtf(1.0 - sin2));
+  return refraction.normalize();
 }
 
 inline bool vector3::parallel(const vector3& rhs) const {
-  //
   // if vector 2 is some multiple of vector 1, they are parallel.
-  //
 
   float32 a = angle(rhs);
 
@@ -265,17 +233,13 @@ inline bool vector3::orthogonal(const vector3& rhs) const {
 inline float32 vector3::angle(const vector3& rhs) const {
   float32 product = dot(rhs);
 
-  //
   // cos(t) = v1 (dot) v2 / ||v1|| * ||v2||
-  //
 
   float32 len1 = length();
   float32 len2 = rhs.length();
 
-  //
   // If either vector has a zero length, the angle between them
   // will be invalid.
-  //
 
   if (0 == len1 || 0 == len2) {
     return 0.0f;
@@ -292,10 +256,8 @@ inline float32 vector3::angle_relative(const vector3& rhs,
   float32 len1 = length();
   float32 len2 = rhs.length();
 
-  //
   // If either vector has a zero length, the angle between them
   // will be invalid.
-  //
 
   if (0 == len1 || 0 == len2) {
     return 0.0f;
@@ -303,10 +265,8 @@ inline float32 vector3::angle_relative(const vector3& rhs,
 
   float32 v_angle = product / (len1 * len2);
 
-  //
   // Here we check to make sure our two vectors are not extremely
   // close together. If they are, we simply return an angle of zero.
-  //
 
   if (compare_epsilon(v_angle, 1)) {
     return 0.0f;
@@ -314,10 +274,8 @@ inline float32 vector3::angle_relative(const vector3& rhs,
 
   float32 acosangle = acos(v_angle);
 
-  //
   // ATP: Our vectors are sufficiently different, so we continue
   //	    with our relative angle calculation.
-  //
 
   vector3 newAxis = cross(rhs);
   float32 angularSign = ref.dot(newAxis);
@@ -383,7 +341,8 @@ inline const vector3& vector3::operator=(const vector3& rhs) {
 }
 
 inline bool vector3::operator==(const vector3& rhs) const {
-  return (x == rhs.x && y == rhs.y && z == rhs.z);
+  return (compare_epsilon(x, rhs.x) && compare_epsilon(y, rhs.y) &&
+          compare_epsilon(z, rhs.z));
 }
 
 inline bool vector3::operator!=(const vector3& rhs) const {

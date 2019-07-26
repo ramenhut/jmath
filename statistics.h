@@ -1,15 +1,12 @@
-
+/*
 //
-// Copyright (c) 1998-2002 Joe Bertolami. All Right Reserved.
-//
-// statistics.h
+// Copyright (c) 1998-2019 Joe Bertolami. All Right Reserved.
 //
 //   Redistribution and use in source and binary forms, with or without
 //   modification, are permitted provided that the following conditions are met:
 //
 //   * Redistributions of source code must retain the above copyright notice,
-//   this
-//     list of conditions and the following disclaimer.
+//     this list of conditions and the following disclaimer.
 //
 //   * Redistributions in binary form must reproduce the above copyright notice,
 //     this list of conditions and the following disclaimer in the documentation
@@ -30,6 +27,7 @@
 //
 //   For more information, visit http://www.bertolami.com.
 //
+*/
 
 #ifndef __STATISTICS_H__
 #define __STATISTICS_H__
@@ -37,6 +35,7 @@
 #include <vector>
 #include "base.h"
 #include "matrix2.h"
+#include "matrix3.h"
 #include "vector2.h"
 #include "vector3.h"
 #include "vector4.h"
@@ -58,7 +57,6 @@ vector2 compute_deviation(vector2* point_list, uint32 count);
 vector3 compute_deviation(vector3* point_list, uint32 count);
 vector4 compute_deviation(vector4* point_list, uint32 count);
 
-float32 compute_covariance(float32* point_list, uint32 count);
 vector2 compute_covariance(vector2* point_listA, vector2* point_listB,
                            uint32 count);
 vector3 compute_covariance(vector3* point_listA, vector3* point_listB,
@@ -66,24 +64,12 @@ vector3 compute_covariance(vector3* point_listA, vector3* point_listB,
 vector4 compute_covariance(vector4* point_listA, vector4* point_listB,
                            uint32 count);
 
-float32 sum_square_differences(float32* list_a, float32* list_b, uint32 count);
-float32 sum_square_differences(uint8* list_a, uint8* list_b, uint32 count);
-float32 sum_square_differences(uint32* list_a, uint32* list_b, uint32 count);
-
 void compute_linear_squares(vector2* point_list, uint32 count,
                             vector2* out_start, vector2* out_end);
 void compute_linear_squares(vector3* point_list, uint32 count,
                             vector3* out_start, vector3* out_end);
 void compute_linear_squares(vector4* point_list, uint32 count,
                             vector4* out_start, vector4* out_end);
-
-void compute_principal_components(vector2* point_list, uint32 count,
-                                  matrix2* out_vectors);
-void compute_principal_components(vector3* point_list, uint32 count,
-                                  matrix3* out_vectors);
-
-void compute_ransac(vector2* point_list, uint32 count, matrix2* out_vectors);
-void compute_ransac(vector3* point_list, uint32 count, matrix3* out_vectors);
 
 }  // namespace base
 

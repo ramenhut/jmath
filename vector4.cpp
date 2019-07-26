@@ -29,8 +29,6 @@ vector4::operator vector2() { return vector2(x, y); }
 
 vector4::operator vector3() { return vector3(x, y, z); }
 
-void vector4::print() const { BASE_MSG("(%f, %f, %f, %f)", x, y, z, w); }
-
 const vector4& vector4::operator=(const vector2& rhs) {
   x = rhs.x;
   y = rhs.y;
@@ -44,7 +42,7 @@ const vector4& vector4::operator=(const vector3& rhs) {
   x = rhs.x;
   y = rhs.y;
   z = rhs.z;
-  w = 0.0f;
+  w = 1.0f;
 
   return (*this);
 }

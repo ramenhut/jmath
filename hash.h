@@ -1,15 +1,12 @@
-
+/*
 //
-// Copyright (c) 2000-2002 Joe Bertolami. All Right Reserved.
-//
-// hash.h
+// Copyright (c) 1998-2019 Joe Bertolami. All Right Reserved.
 //
 //   Redistribution and use in source and binary forms, with or without
 //   modification, are permitted provided that the following conditions are met:
 //
 //   * Redistributions of source code must retain the above copyright notice,
-//   this
-//     list of conditions and the following disclaimer.
+//     this list of conditions and the following disclaimer.
 //
 //   * Redistributions in binary form must reproduce the above copyright notice,
 //     this list of conditions and the following disclaimer in the documentation
@@ -30,6 +27,7 @@
 //
 //   For more information, visit http://www.bertolami.com.
 //
+*/
 
 #ifndef __HASH_H__
 #define __HASH_H__
@@ -41,9 +39,7 @@ namespace base {
 inline uint32 hash_bytes(uint8 *input, uint32 length) {
   // Modified Bernstein hashing function -- ours provides a more
   // ideal (high entropy) distribution.
-
   uint32 hash_code = 5381;
-
   for (uint32 i = 0; i < length; i++) {
     uint32 c = input[i];
 

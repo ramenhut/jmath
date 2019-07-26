@@ -1,15 +1,12 @@
-
+/*
 //
-// Copyright (c) 1998-2002 Joe Bertolami. All Right Reserved.
-//
-// vector2.h
+// Copyright (c) 1998-2019 Joe Bertolami. All Right Reserved.
 //
 //   Redistribution and use in source and binary forms, with or without
 //   modification, are permitted provided that the following conditions are met:
 //
 //   * Redistributions of source code must retain the above copyright notice,
-//   this
-//     list of conditions and the following disclaimer.
+//     this list of conditions and the following disclaimer.
 //
 //   * Redistributions in binary form must reproduce the above copyright notice,
 //     this list of conditions and the following disclaimer in the documentation
@@ -30,6 +27,7 @@
 //
 //   For more information, visit http://www.bertolami.com.
 //
+*/
 
 #ifndef __VECTOR2_H__
 #define __VECTOR2_H__
@@ -53,19 +51,8 @@ typedef struct vector2 {
  public:
   vector2();
   vector2(const vector2& rhs);
-  vector2(const vector3& rhs);
-  vector2(const vector4& rhs);
   vector2(float32 xj, float32 yj);
   ~vector2();
-
-  operator vector3();
-  operator vector4();
-
-  void print() const;
-
-  //
-  // operations
-  //
 
   inline const vector2& clear();
   inline vector2 normalize() const;
@@ -85,27 +72,13 @@ typedef struct vector2 {
   inline float32 distance(const vector2& rhs) const;
   inline float32 length() const;
 
-  //
-  // assignment operators
-  //
-
   inline const vector2& operator=(const vector2& rhs);
-  const vector2& operator=(const vector3& rhs);
-  const vector2& operator=(const vector4& rhs);
-
   inline const vector2& operator-=(const vector2& rhs);
   inline const vector2& operator+=(const vector2& rhs);
   inline const vector2& operator*=(const vector2& rhs);
   inline const vector2& operator*=(float32 rhs);
   inline const vector2& operator/=(const vector2& rhs);
   inline const vector2& operator/=(float32 rhs);
-
-  //     vector2         operator *    ( const matrix2 & rhs );
-  //     const vector2 & operator *=   ( const matrix2 & rhs ) const;
-
-  //
-  // binary operators
-  //
 
   inline bool operator==(const vector2& rhs) const;
   inline bool operator!=(const vector2& rhs) const;
@@ -116,7 +89,6 @@ typedef struct vector2 {
   inline vector2 operator/(const vector2& rhs) const;
   inline vector2 operator/(float32 rhs) const;
 
-  //
   // Here we define two variants of our bracket operator. The first
   // operator handles the lvalue case:
   //
@@ -125,7 +97,6 @@ typedef struct vector2 {
   // The second operator passes a const this pointer, and is useful
   // when operating on const references (e.g. any of our other
   // operators that receive const vector2 & rhs as a parameter.)
-  //
 
   inline float32& operator[](int32 index);
   inline const float32& operator[](int32 index) const;
@@ -204,9 +175,7 @@ inline vector2 vector2::Refract(const vector2& normal, float32 a,
 }
 
 inline bool vector2::parallel(const vector2& rhs) const {
-  //
   // if vector 2 is some multiple of vector 1, they are parallel.
-  //
 
   float32 a = angle(rhs);
 
@@ -225,18 +194,14 @@ inline bool vector2::orthogonal(const vector2& rhs) const {
 inline float32 vector2::angle(const vector2& rhs) const {
   float32 product = dot(rhs);
 
-  //
   // cos(t) = v1 (dot) v2 / ||v1|| * ||v2||
-  //
 
   float32 v_angle;
   float32 len1 = length();
   float32 len2 = rhs.length();
 
-  //
   // If either vector has a zero length, the angle between them
   // will be invalid.
-  //
 
   if (0 == len1 || 0 == len2) {
     return 0.0f;
@@ -303,7 +268,7 @@ inline const vector2& vector2::operator/=(float32 rhs) {
 }
 
 inline bool vector2::operator==(const vector2& rhs) const {
-  return (x == rhs.x && y == rhs.y);
+  return (compare_epsilon(x, rhs.x) && compare_epsilon(y, rhs.y));
 }
 
 inline bool vector2::operator!=(const vector2& rhs) const {

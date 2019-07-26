@@ -25,9 +25,7 @@ void compute_linear_squares(vector2* point_list, uint32 count,
     xi += point_list[j].x;
   }
 
-  //
   // Solve our linear system of equations
-  //
 
   matrix2 A;
   vector2 B;
@@ -45,13 +43,10 @@ void compute_linear_squares(vector2* point_list, uint32 count,
   m = C.x;
   b = C.y;
 
-  //
   // Direct method (provided for example purposes only)
   //
   // b = ( xiyi / xi2 - yi / xi ) / ( i / xi - xi / xi2 );
   // m = ( 2 * xiyi + 2 * b * xi ) / ( 2 * xi2 );
-  //
-
   //
   // Now we must determine an origin and vector for the line. We
   // search for the coordinate with the minimum x, and then plug this
@@ -59,7 +54,6 @@ void compute_linear_squares(vector2* point_list, uint32 count,
   //
   // We will also search for the coordinate with the maximum x, and
   // plug this into our equation to derive the line segment end point.
-  //
 
   float32 min_x_value = 9999999.0f;
   float32 max_x_value = 0;

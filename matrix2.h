@@ -1,15 +1,12 @@
-
+/*
 //
-// Copyright (c) 1998-2002 Joe Bertolami. All Right Reserved.
-//
-// matrix2.h
+// Copyright (c) 1998-2019 Joe Bertolami. All Right Reserved.
 //
 //   Redistribution and use in source and binary forms, with or without
 //   modification, are permitted provided that the following conditions are met:
 //
 //   * Redistributions of source code must retain the above copyright notice,
-//   this
-//     list of conditions and the following disclaimer.
+//     this list of conditions and the following disclaimer.
 //
 //   * Redistributions in binary form must reproduce the above copyright notice,
 //     this list of conditions and the following disclaimer in the documentation
@@ -30,6 +27,7 @@
 //
 //   For more information, visit http://www.bertolami.com.
 //
+*/
 
 #ifndef __MATRIX2_H__
 #define __MATRIX2_H__
@@ -42,12 +40,10 @@ namespace base {
 
 typedef struct matrix2 {
  public:
-  //
   // Column Major:
   //
   // 2x2 =  | 0  2 |
   //        | 1  3 |
-  //
 
   union {
     struct {
@@ -63,19 +59,8 @@ typedef struct matrix2 {
  public:
   matrix2();
   matrix2(const matrix2& rhs);
-  matrix2(const matrix3& rhs);
-  matrix2(const matrix4& rhs);
   matrix2(float32 _m00, float32 _m10, float32 _m01, float32 _m11);
   ~matrix2();
-
-  operator matrix3();
-  operator matrix4();
-
-  void print() const;
-
-  //
-  // operations
-  //
 
   inline const matrix2& clear();
   inline const matrix2& identity();
@@ -99,19 +84,11 @@ typedef struct matrix2 {
   inline const matrix2& set(float32 _m00, float32 _m10, float32 _m01,
                             float32 _m11);
 
-  //
-  // assignment operators
-  //
-
   inline const matrix2& operator=(const matrix2& rhs);
   inline const matrix2& operator-=(const matrix2& rhs);
   inline const matrix2& operator+=(const matrix2& rhs);
   inline const matrix2& operator*=(const matrix2& rhs);  // matrix concatenation
   inline const matrix2& operator/=(const matrix2& rhs);  // 1/rhs concatentation
-
-  //
-  // binary operators
-  //
 
   inline bool operator==(const matrix2& rhs) const;
   inline bool operator!=(const matrix2& rhs) const;
@@ -122,7 +99,6 @@ typedef struct matrix2 {
   inline matrix2 operator*(float32 rhs) const;
   inline matrix2 operator/(const matrix2& rhs) const;
 
-  //
   // Here we define two variants of our bracket operator. The first
   // operator handles the lvalue case:
   //
@@ -130,8 +106,7 @@ typedef struct matrix2 {
   //
   // The second operator passes a const this pointer, and is useful
   // when operating on const references (e.g. any of our other
-  // operators that receive const CMatrix3 & rhs as a parameter.)
-  //
+  // operators that receive const matrix3 & rhs as a parameter.)
 
   inline float32& operator[](int32 i);
   inline const float32& operator[](int32 i) const;
@@ -141,10 +116,7 @@ typedef struct matrix2 {
 inline float32 matrix2::trace() const { return m[0] + m[3]; }
 
 inline vector2 matrix2::eigenvalues() const {
-  //
   // Solve det( M - lamda * Identity ) = 0
-  //
-
   float32 a = 1;
   float32 b = -trace();
   float32 c = m00 * m11 - m01 * m10;
@@ -161,13 +133,8 @@ inline vector2 matrix2::eigenvalues() const {
 }
 
 inline matrix2 matrix2::eigenvectors() const {
-  //
   // Solve ( M - lamda * Identity ) * Vi = 0
-  //
-
-  //
   // We should have one eigenvector per eigen value
-  //
 
   matrix2 output;
   vector2 values = eigenvalues();
@@ -177,15 +144,12 @@ inline matrix2 matrix2::eigenvectors() const {
 
   i.identity();
 
-  //
   // First eigen value calculation
-  //
 
   matrix2 o1 = m - i * values.x;
 
-  //
-  //          o1.m[0] * x + o1.m[2] * y = 0
-  //          o1.m[1] * x + o1.m[3] * y = 0
+  //      o1.m[0] * x + o1.m[2] * y = 0
+  //      o1.m[1] * x + o1.m[3] * y = 0
   //
   //  => Since this vector expresses only direction, and not magnitude,
   //     we can set x = 1 to solve for y.
@@ -206,9 +170,7 @@ inline matrix2 matrix2::eigenvectors() const {
   else
     output.m[2] = -o1.m[1];
 
-  //
   // Second eigen value calculation
-  //
 
   matrix2 o2 = m - i * values.y;
 
@@ -226,11 +188,8 @@ inline matrix2 matrix2::eigenvectors() const {
 }
 
 inline bool matrix2::is_diagonal() const {
-  //
   // A diagonal matrix has non-zero values only along the
   // diagonal, and zero everywhere else.
-  //
-
   if (m10 || m01) return false;
 
   return true;
@@ -277,10 +236,6 @@ inline matrix2 matrix2::inverse() const {
   }
 
   inv_det = 1.0f / det;
-
-  //
-  // calculate adjoint matrix then transpose it
-  //
 
   output[0] = inv_det * m[3];
   output[1] = inv_det * (-1.0f * m[1]);
@@ -402,10 +357,6 @@ inline const matrix2& matrix2::operator*=(const matrix2& rhs) {
 }
 
 inline vector2 matrix2::operator*(const vector2& rhs) const {
-  //
-  // M * vec
-  //
-
   return vector2(rhs.x * m[0] + rhs.y * m[2], rhs.x * m[1] + rhs.y * m[3]);
 }
 

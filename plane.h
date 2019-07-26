@@ -1,15 +1,12 @@
-
+/*
 //
-// Copyright (c) 1998-2002 Joe Bertolami. All Right Reserved.
-//
-// plane.h
+// Copyright (c) 1998-2019 Joe Bertolami. All Right Reserved.
 //
 //   Redistribution and use in source and binary forms, with or without
 //   modification, are permitted provided that the following conditions are met:
 //
 //   * Redistributions of source code must retain the above copyright notice,
-//   this
-//     list of conditions and the following disclaimer.
+//     this list of conditions and the following disclaimer.
 //
 //   * Redistributions in binary form must reproduce the above copyright notice,
 //     this list of conditions and the following disclaimer in the documentation
@@ -30,6 +27,7 @@
 //
 //   For more information, visit http://www.bertolami.com.
 //
+*/
 
 #ifndef __PLANE_H__
 #define __PLANE_H__
@@ -68,10 +66,6 @@ inline vector3 project_plane(const plane& plane, const vector3& vector) {
 }
 
 inline float32 plane_distance(const plane& plane, const vector3& point) {
-  //
-  // return Ax + By + Cz + D
-  //
-
   return (float32)plane[0] * point[0] + plane[1] * point[1] +
          plane[2] * point[2] + plane[3];
 }
@@ -102,9 +96,13 @@ inline plane calculate_plane(const vector3& p1, const vector3& p2,
   return output;
 }
 
+inline plane calculate_plane(const vector3& p1, const vector3& p2,
+                             const vector3& p3) {
+  return calculate_plane(p1, p2, p3, p1);
+}
+
 inline plane normalize_plane(const plane& p) {
   plane output;
-
   float32 length = inv_sqrt(p[0] * p[0] + p[1] * p[1] + p[2] * p[2]);
 
   output[0] = p[0] * length;
@@ -114,10 +112,6 @@ inline plane normalize_plane(const plane& p) {
 
   return output;
 }
-
-//
-// Tangent space operators
-//
 
 inline void calculate_tangent_basis(const vector3& p1, const vector3& p2,
                                     const vector3& p3, const vector2& t1,

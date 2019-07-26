@@ -1,15 +1,12 @@
-
+/*
 //
-// Copyright (c) 1998-2002 Joe Bertolami. All Right Reserved.
-//
-// curve.h
+// Copyright (c) 1998-2019 Joe Bertolami. All Right Reserved.
 //
 //   Redistribution and use in source and binary forms, with or without
 //   modification, are permitted provided that the following conditions are met:
 //
 //   * Redistributions of source code must retain the above copyright notice,
-//   this
-//     list of conditions and the following disclaimer.
+//     this list of conditions and the following disclaimer.
 //
 //   * Redistributions in binary form must reproduce the above copyright notice,
 //     this list of conditions and the following disclaimer in the documentation
@@ -30,6 +27,7 @@
 //
 //   For more information, visit http://www.bertolami.com.
 //
+*/
 
 #ifndef __CURVE_H__
 #define __CURVE_H__
@@ -46,7 +44,7 @@ namespace base {
 
 class curve {
  protected:
-  std::vector<vector3> control_list;
+  ::std::vector<vector3> control_list;
 
  public:
   curve();
@@ -63,7 +61,7 @@ class curve {
 };
 
 class path {
-  std::vector<curve> curve_list;
+  ::std::vector<curve> curve_list;
 
  public:
   path();

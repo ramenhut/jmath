@@ -1,15 +1,12 @@
-
+/*
 //
-// Copyright (c) 1998-2002 Joe Bertolami. All Right Reserved.
-//
-// matrix4.h
+// Copyright (c) 1998-2019 Joe Bertolami. All Right Reserved.
 //
 //   Redistribution and use in source and binary forms, with or without
 //   modification, are permitted provided that the following conditions are met:
 //
 //   * Redistributions of source code must retain the above copyright notice,
-//   this
-//     list of conditions and the following disclaimer.
+//     this list of conditions and the following disclaimer.
 //
 //   * Redistributions in binary form must reproduce the above copyright notice,
 //     this list of conditions and the following disclaimer in the documentation
@@ -30,12 +27,14 @@
 //
 //   For more information, visit http://www.bertolami.com.
 //
+*/
 
 #ifndef __MATRIX4_H__
 #define __MATRIX4_H__
 
 #include "base.h"
 #include "matrix2.h"
+#include "matrix3.h"
 #include "vector3.h"
 #include "vector4.h"
 
@@ -43,14 +42,12 @@ namespace base {
 
 typedef struct matrix4 {
  public:
-  //
   // Column Major:
   //
   // 4x4 =  | 0   4   8   12 |
   //        | 1   5   9   13 |
   //        | 2   6   10  14 |
   //        | 3   7   11  15 |
-  //
 
   union {
     struct {
@@ -91,12 +88,6 @@ typedef struct matrix4 {
 
   operator matrix2();
   operator matrix3();
-
-  void print() const;
-
-  //
-  // operations
-  //
 
   inline const matrix4& clear();
   inline const matrix4& identity();
@@ -139,19 +130,12 @@ typedef struct matrix4 {
                             float32 _m12, float32 _m22, float32 _m32,
                             float32 _m03, float32 _m13, float32 _m23,
                             float32 _m33);
-  //
-  // assignment operators
-  //
 
   inline const matrix4& operator=(const matrix4& rhs);
   inline const matrix4& operator-=(const matrix4& rhs);
   inline const matrix4& operator+=(const matrix4& rhs);
   inline const matrix4& operator*=(const matrix4& rhs);
   inline const matrix4& operator/=(const matrix4& rhs);
-
-  //
-  // binary operators
-  //
 
   inline bool operator==(const matrix4& rhs) const;
   inline bool operator!=(const matrix4& rhs) const;
@@ -161,7 +145,6 @@ typedef struct matrix4 {
   inline vector4 operator*(const vector4& rhs) const;
   inline matrix4 operator/(const matrix4& rhs) const;
 
-  //
   // Here we define two variants of our bracket operator. The first
   // operator handles the lvalue case:
   //
@@ -170,7 +153,6 @@ typedef struct matrix4 {
   // The second operator passes a const this pointer, and is useful
   // when operating on const references (e.g. any of our other
   // operators that receive const CMatrix3 & rhs as a parameter.)
-  //
 
   inline float32& operator[](int32 i);
   inline const float32& operator[](int32 i) const;
@@ -322,10 +304,8 @@ inline matrix4 matrix4::rotation_x(float32 rad) const {
   matrix4 output;
   output = output.identity();
 
-  //
   // This produces the same result as rotation( rad, BASE_X_AXIS )
   // without the extra call
-  //
 
   output[5] = cos(rad);
   output[6] = sin(rad);
@@ -339,10 +319,8 @@ inline matrix4 matrix4::rotation_y(float32 rad) const {
   matrix4 output;
   output = output.identity();
 
-  //
   // This produces the same result as rotation( rad, BASE_Y_AXIS )
   // without the extra call
-  //
 
   output[0] = cos(rad);
   output[2] = sin(rad);
@@ -356,10 +334,8 @@ inline matrix4 matrix4::rotation_z(float32 rad) const {
   matrix4 output;
   output = output.identity();
 
-  //
   // This produces the same result as rotation( rad, BASE_Z_AXIS )
   // without the extra call
-  //
 
   output[0] = cos(rad);
   output[1] = sin(rad);
@@ -372,28 +348,27 @@ inline matrix4 matrix4::rotation_z(float32 rad) const {
 inline const matrix4& matrix4::orient(const vector3& pos, const vector3& xaxis,
                                       const vector3& yaxis,
                                       const vector3& zaxis) {
-  matrix4 trans;
+  m00 = xaxis.x;
+  m10 = xaxis.y;
+  m20 = xaxis.z;
+  m30 = -xaxis.dot(pos);
 
-  m[0] = xaxis[0];
-  m[4] = xaxis[1];
-  m[8] = xaxis[2];
-  m[12] = 0;
-  m[1] = yaxis[0];
-  m[5] = yaxis[1];
-  m[9] = yaxis[2];
-  m[13] = 0;
-  m[2] = -zaxis[0];
-  m[6] = -zaxis[1];
-  m[10] = -zaxis[2];
-  m[14] = 0;
-  m[3] = 0;
-  m[7] = 0;
-  m[11] = 0;
-  m[15] = 1.0;
+  m01 = yaxis.x;
+  m11 = yaxis.y;
+  m21 = yaxis.z;
+  m31 = -yaxis.dot(pos);
 
-  trans = trans.translation(-pos[0], -pos[1], -pos[2]);
+  m02 = zaxis.x;
+  m12 = zaxis.y;
+  m22 = zaxis.z;
+  m32 = -zaxis.dot(pos);
 
-  return ((*this) = (*this) * trans);
+  m03 = 0;
+  m13 = 0;
+  m23 = 0;
+  m33 = 1;
+
+  return (*this);
 }
 
 inline const matrix4& matrix4::ortho(float32 left, float32 right, float32 top,
@@ -446,36 +421,25 @@ inline const matrix4& matrix4::frustum(float32 left, float32 right,
 
 inline const matrix4& matrix4::perspective(float32 fovy, float32 aspect,
                                            float32 nz, float32 fz) {
-  float32 f = 1.0f / tanf(fovy / 2.0f);
+  float32 fovx = fovy * aspect;
+  float32 width = 1.0 / tanf(fovx * 0.5);
+  float32 height = 1.0 / tanf(fovy * 0.5);
+  float32 clip_ratio = fz / (fz - nz);
 
-  m[0] = f / aspect;
-  m[1] = 0.0f;
-  m[2] = 0.0f;
-  m[3] = 0.0f;
+  identity();
 
-  m[4] = 0.0f;
-  m[5] = f;
-  m[6] = 0.0f;
-  m[7] = 0.0f;
-
-  m[8] = 0.0f;
-  m[9] = 0.0f;
-  m[10] = (fz + nz) / (nz - fz);
-  m[11] = -1.0f;
-
-  m[12] = 0.0f;
-  m[13] = 0.0f;
-  m[14] = 2 * fz * nz / (nz - fz);
-  m[15] = 0.0f;
+  m00 = width;
+  m11 = height;
+  m22 = clip_ratio;
+  m32 = -clip_ratio * nz;
+  m23 = 1;
 
   return (*this);
 }
 
 inline const matrix4& matrix4::look(const vector3& origin, const vector3& view,
                                     const vector3& up) {
-  //
   // Generate our right vector then create an orientation matrix
-  //
 
   matrix4 output;
 
@@ -491,11 +455,9 @@ inline const matrix4& matrix4::look(const vector3& origin, const vector3& view,
 inline const matrix4& matrix4::look_at(const vector3& origin,
                                        const vector3& target,
                                        const vector3& up) {
-  //
   // Generate our right vector then create an orientation matrix
-  //
 
-  vector3 view = (origin - target).normalize();
+  vector3 view = (target - origin).normalize();
   vector3 right = up.cross(view).normalize();
   vector3 newUp = view.cross(right).normalize();
   orient(origin, right, newUp, view);
@@ -588,10 +550,6 @@ inline const matrix4& matrix4::operator*=(const matrix4& rhs) {
 }
 
 inline vector4 matrix4::operator*(const vector4& rhs) const {
-  //
-  // M * vec
-  //
-
   return vector4(rhs.x * m[0] + rhs.y * m[4] + rhs.z * m[8] + rhs.w * m[12],
                  rhs.x * m[1] + rhs.y * m[5] + rhs.z * m[9] + rhs.w * m[13],
                  rhs.x * m[2] + rhs.y * m[6] + rhs.z * m[10] + rhs.w * m[14],
